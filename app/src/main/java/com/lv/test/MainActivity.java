@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -15,9 +16,14 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.wx.goodview.GoodView;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import de.greenrobot.dao.query.QueryBuilder;
 import greendao.DaoMaster;
 import greendao.DaoSession;
+import greendao.Patient;
+import greendao.TestBean2;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -30,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_CAMERA =101 ;
     Button button;
     PermissionManager helper;
+    private int index=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +56,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                test();
-              /*  realm.executeTransactionAsync(new Realm.Transaction() {
+                realm.executeTransactionAsync(new Realm.Transaction() {
                     @Override
                     public void execute(Realm realm) {
                         TestBean testBean;
@@ -60,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                             testBean.setId(0);
                             realm.copyToRealmOrUpdate(testBean);
                         }
-                        System.out.println((System.currentTimeMillis()-l)+"   realm");
+                        Log.d("MainActivity", ((System.currentTimeMillis() - l) + "   realm"));
                     }
                 }, new Realm.Transaction.OnSuccess() {
                     @Override
@@ -78,23 +84,37 @@ public class MainActivity extends AppCompatActivity {
                             testBean.setId(i);
                             Hawk.put("wode"+i,testBean);
                         }
+                        Log.d("MainActivity", ((System.currentTimeMillis() - l) + "   Hawk"));
+                    }
+                }).start();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TestBeanX testBean;
+                        long l = System.currentTimeMillis();
+                        for (int i = 0; i <10 ; i++) {
+                            testBean=new TestBeanX();
+                            testBean.save();
+                        }
 
-                        System.out.println((System.currentTimeMillis()-l)+"   Hawk");
+                        Log.d("MainActivity", ((System.currentTimeMillis() - l) + "   litapal"));
                     }
                 }).start();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         long l = System.currentTimeMillis();
-                        for (int i = 0; i <10 ; i++) {
+                        for (int i = index; i <index+10 ; i++) {
                             daoSession.getPatientDao().insert(new Patient(""+i, "asdf", "asdf"));
                         }
 
-                        System.out.println((System.currentTimeMillis()-l)+"   daoSession");
+                        Log.d("MainActivity", ((System.currentTimeMillis() - l) + "   daoSession"));
+                        index+=10;
+
                     }
                 }).start();
 
-               *//* new Thread(new Runnable() {
+                new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Map<String,String> map= new LinkedHashMap<>();
@@ -109,8 +129,7 @@ public class MainActivity extends AppCompatActivity {
                         if(s!=null)
                             Log.d("MainActivity", getList);
                     }
-                }).start();*//*
-            }*/
+                }).start();
             }
         });
 
@@ -133,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         Uri data = Uri.parse("tel:" + "15202842963");
                         intent.setData(data);
-                        startActivity(intent);
                     }
 
 
