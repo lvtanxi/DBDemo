@@ -12,6 +12,13 @@ android {
     }
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi'
+        }
+    }
 
     defaultConfig {
         applicationId "com.lv.test"
